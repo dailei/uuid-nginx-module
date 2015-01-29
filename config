@@ -1,0 +1,45 @@
+if echo $HTTP_MODULES | grep " ndk_http_module" > /dev/null; then
+    echo "found ngx_devel_kit for ngx_uuid; looks good."
+else
+    echo "error: ngx_devel_kit is required to build ngx_uuid; please put it before ngx_uuid." 1>&2
+    exit 1
+fi
+
+ngx_feature_incs="#include <uuid/uuid.h>"
+ngx_feature_test="uuid_t uuid;uuid_generate(uuid);"
+
+if [ -z "$UUID_CONFIG" ]; then
+    UUID_CONFIG=uuid-config
+fi
+
+if type $UUID_CONFIG >/dev/null 2>&1; then
+    ngx_feature="uuid library (via $UUID_CONFIG)"
+    ngx_feature_path="`$UUID_CONFIG --includedir`"
+    
+    if [ $NGX_RPATH = YES ]; then
+        ngx_feature_libs="-R`$UUID_CONFIG --libdir` -L`$UUID_CONFIG --libdir` -luuid"
+    else
+        ngx_feature_libs="-L`$UUID_CONFIG --libdir` -luuid"
+    fi
+else
+    ngx_feature="uuid library"
+    ngx_feature_libs="-luuid"
+fi
+
+. auto/feature
+
+if [ $ngx_found = no ]; then
+   cat << END
+ $0: error: ngx_uuid addon was unable to find the uuid library.
+END
+   exit 1
+fi
+
+ngx_addon_name=ngx_http_uuid_module
+
+CORE_LIBS="$CORE_LIBS $ngx_feature_libs"
+
+HTTP_AUX_FILTER_MODULES="$HTTP_AUX_FILTER_MODULES ngx_http_uuid_module"
+
+NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/src/ngx_http_uuid_module.c"
+NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_addon_dir/src/ngx_http_uuid_module.h"
