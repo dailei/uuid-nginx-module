@@ -71,7 +71,7 @@ uuid
 
 uuid_random
 ------------
-**syntax:** *uuid $dst*
+**syntax:** *uuid_random $dst*
 
 **default:** *no*
 
@@ -81,7 +81,7 @@ uuid_random
 
 uuid_time
 ------------
-**syntax:** *uuid $dst*
+**syntax:** *uuid_time $dst*
 
 **default:** *no*
 
@@ -91,7 +91,7 @@ uuid_time
 
 uuid_time_safe
 ------------
-**syntax:** *uuid $dst*
+**syntax:** *uuid_time_safe $dst*
 
 **default:** *no*
 
